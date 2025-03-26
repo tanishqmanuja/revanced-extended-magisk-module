@@ -1,6 +1,6 @@
 # ReVanced eXtended Magisk Module
 
-[![CI](https://github.com/tanishqmanuja/revanced-extended-magisk-module/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/j-hc/revanced-magisk-module/actions/workflows/ci.yml)
+[![CI](https://github.com/tanishqmanuja/revanced-extended-magisk-module/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/tanishqmanuja/revanced-extended-magisk-module/actions/workflows/ci.yml)
 
 ## 📦 Installation
 
