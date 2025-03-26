@@ -1,3 +1,5 @@
+![Logo](https://raw.github.com/tanishqmanuja/static/main/banners/rvx-magisk-module.png?maxAge=2592000)
+
 # ReVanced eXtended Magisk Module
 
 [![CI](https://img.shields.io/github/actions/workflow/status/tanishqmanuja/revanced-extended-magisk-module/ci.yml?branch=main&style=for-the-badge&label=ci)](https://github.com/tanishqmanuja/revanced-extended-magisk-module/actions/workflow/status/ci.yml?branch=main&style=for-the-badge&label=ci)
