@@ -1,10 +1,12 @@
 # ReVanced eXtended Magisk Module
 
-[![CI](https://github.com/tanishqmanuja/revanced-extended-magisk-module/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/tanishqmanuja/revanced-extended-magisk-module/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/tanishqmanuja/revanced-extended-magisk-module/ci.yml?branch=main&style=for-the-badge&label=ci)](https://github.com/tanishqmanuja/revanced-extended-magisk-module/actions/workflow/status/ci.yml?branch=main&style=for-the-badge&label=ci)
+[![GitHub last release](https://img.shields.io/github/release-date/tanishqmanuja/revanced-extended-magisk-module?style=for-the-badge&label=latest%20Release)](https://github.com/tanishqmanuja/revanced-extended-magisk-module/releases)
+[![Total Downloads](https://img.shields.io/github/downloads/tanishqmanuja/revanced-extended-magisk-module/total?label=Downloads&style=for-the-badge)](https://github.com/tanishqmanuja/revanced-extended-magisk-module/releases)
 
 ## 📦 Installation
 
-Get the [latest CI release](https://github.com/tanishqmanuja/revanced-extended-magisk-module/releases).
+Get the [latest CI release](https://github.com/tanishqmanuja/revanced-extended-magisk-module/releases) and flash with magisk.
 
 ## 📃 Notes
 
