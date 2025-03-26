@@ -1,0 +1,26 @@
+name: Sync Upstream
+
+env:
+  WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+
+on:
+  schedule:
+    - cron: "0 20 * * *"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Sync with upstream
+        uses: repo-sync/github-sync@v2
+        with:
+          source_repo: "j-hc/revanced-magisk-module"
+          source_branch: "main"
+          destination_branch: "main"
+          github_token: ${{ secrets.WORKFLOW_TOKEN }}
