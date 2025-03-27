@@ -1,8 +1,9 @@
 name: CI
+
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 22 * * *"
+    - cron: "0 8 * * *"
 
 jobs:
   check:
