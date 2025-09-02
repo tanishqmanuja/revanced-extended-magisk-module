@@ -1,6 +1,6 @@
 {
-  "version": "v8.12.53 (patches 5.9.1)",
-  "versionCode": 6,
-  "zipUrl": "https://github.com/tanishqmanuja/revanced-extended-magisk-module/releases/download/6/music-revanced-extended-magisk-v8.12.53-arm-v7a.zip",
+  "version": "v8.30.54 (patches 5.10.1)",
+  "versionCode": 7,
+  "zipUrl": "https://github.com/tanishqmanuja/revanced-extended-magisk-module/releases/download/7/music-revanced-extended-magisk-v8.30.54-arm-v7a.zip",
   "changelog": "https://raw.githubusercontent.com/tanishqmanuja/revanced-extended-magisk-module/update/build.md"
 }
