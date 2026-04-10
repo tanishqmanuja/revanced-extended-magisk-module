@@ -8,8 +8,8 @@ Use [zygisk-detach](https://github.com/j-hc/zygisk-detach) to detach root ReVanc
 [ReVanced eXtended Magisk Module](https://github.com/tanishqmanuja/revanced-extended-magisk-module)
   
 CLI: MorpheApp/morphe-cli-1.6.3-all.jar  
-Patches: MorpheApp/patches-1.22.0.mpp  
-[Changelog](https://github.com/MorpheApp/morphe-patches/releases/tag/v1.22.0)  
+Patches: MorpheApp/patches-1.23.0.mpp  
+[Changelog](https://github.com/MorpheApp/morphe-patches/releases/tag/v1.23.0)  
 
 Skipped:  
-Patches: inotia00/patches-5.14.1.rvp                    
+Patches: inotia00/patches-5.14.1.rvp                      
