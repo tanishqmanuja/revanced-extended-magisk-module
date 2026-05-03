@@ -271,7 +271,7 @@ get_patch_last_supported_ver() {
 		fi
 	fi
 	op=$(patches_list_versions "$cli_jar" "$patches_jar" "$pkg_name") || return 1
-	op=$(sed -n '/(.* patch.*/,$p' <<<"$op" | awk '{$1=$1}1')
+	op=$(sed -n '/Most common compatible versions:/,$p' <<<"$op" | sed '1d' | awk '{$1=$1}1')
 	if [ "$op" = "Any" ]; then return; fi
 	pcount=$(head -1 <<<"$op") pcount=${pcount#*(} pcount=${pcount% *}
 	if [ -z "$pcount" ]; then
@@ -281,14 +281,28 @@ get_patch_last_supported_ver() {
 }
 
 patches_list_versions() {
-	local cli_jar=$1 patches_jar=$2 pkg_name=$3 op
-	if ! op=$(java -jar "$cli_jar" list-versions -p "$patches_jar" -f "$pkg_name" -b 2>&1); then
-		if ! op=$(java -jar "$cli_jar" list-versions "$patches_jar" -f "$pkg_name" 2>&1); then
-			epr "Could not list versions $cli_jar: '$op'"
-			return 1
-		fi
+	local cli_jar=$1 patches_jar=$2 pkg_name=$3 op cmd
+	local cmd_base="java -jar '$cli_jar' list-versions"
+
+	# TODO: remove this later
+	local cli_name
+	cli_name=$(basename "$cli_jar")
+	if [ "${cli_name::8}" = revanced ]; then cmd_base+=" -b"; fi
+
+	cmd="${cmd_base} --patches='$patches_jar' -f '$pkg_name'"
+	if op=$(eval "$cmd" 2>&1); then
+		echo "$op"
+		return
 	fi
-	echo "$op"
+
+	cmd="${cmd_base} '$patches_jar' -f '$pkg_name'"
+	if op=$(eval "$cmd" 2>&1); then
+		echo "$op"
+		return
+	fi
+
+	epr "Could not list versions $cli_jar: '$op'"
+	return 1
 }
 patches_list() {
 	local cli_jar=$1 patches_jar=$2 pkg_name=$3 op
@@ -346,12 +360,11 @@ apkmirror_search() {
 		node=$($HTMLQ "div.table-row.headerFont:nth-last-child($n)" -r "span:nth-child(n+3)" <<<"$resp")
 		if [ -z "$node" ]; then break; fi
 		emptyCheck=$($HTMLQ -t -w "div.table-cell:nth-child(1) > a:nth-child(1)" <<<"$node" | xargs)
-		if [ "$emptyCheck" ]; then
-			dlurl=$($HTMLQ --base https://www.apkmirror.com --attribute href "div:nth-child(1) > a:nth-child(1)" <<<"$node")
-		else break; fi
+		if [ -z "$emptyCheck" ]; then break; fi
 		app_table=$($HTMLQ --text --ignore-whitespace <<<"$node")
-		if [ "$(sed -n 3p <<<"$app_table")" = "$apk_bundle" ] &&
-			isoneof "$(sed -n 6p <<<"$app_table")" "${appdpi[@]}" &&
+		if [ "$(sed -n 3p <<<"$app_table")" != "$apk_bundle" ]; then continue; fi
+		dlurl=$($HTMLQ --base https://www.apkmirror.com --attribute href "div:nth-child(1) > a:nth-child(1)" <<<"$node")
+		if isoneof "$(sed -n 6p <<<"$app_table")" "${appdpi[@]}" &&
 			isoneof "$(sed -n 4p <<<"$app_table")" "${apparch[@]}"; then
 			echo "$dlurl"
 			return 0
@@ -574,6 +587,10 @@ build_rv() {
 	local tried_dl=()
 	for dl_p in "${DL_SRCS[@]}"; do
 		if [ -z "${args[${dl_p}_dlurl]}" ]; then continue; fi
+		if [ "${args[pkg_name]}" ]; then
+			pkg_name="${args[pkg_name]}"
+			break
+		fi
 		if ! get_${dl_p}_resp "${args[${dl_p}_dlurl]}" || ! pkg_name=$(get_"${dl_p}"_pkg_name); then
 			args[${dl_p}_dlurl]=""
 			epr "ERROR: Could not find ${table} in ${dl_p}"
@@ -743,7 +760,30 @@ build_rv() {
 		local module_output="${app_name_l}-${rv_brand_f}-module-v${version_f}-${arch_f}.zip"
 		pr "Packing module ${table}"
 		cp -f "$patched_apk" "${base_template}/base.apk"
-		if [ "${args[include_stock]}" = true ]; then cp -f "$stock_apk" "${base_template}/${pkg_name}.apk"; fi
+
+		if [ "${args[include_stock]}" != "disable" ]; then
+			mkdir -p "${base_template}/stock/"
+			if [ "${args[include_stock]}" = "merged" ]; then
+				cp -f "$stock_apk" "${base_template}/stock/base.apk"
+			elif [ "${args[include_stock]}" = "split" ]; then
+				if [ ! -f "${stock_apk}.apkm" ]; then
+					epr "Cannot include as 'split' because stock apk of $table_name is not bundle"
+					continue
+				fi
+				if [ "$arch" = "arm64-v8a" ]; then
+					unzip -j "${stock_apk}.apkm" '*.apk' -x '*x86_64.apk' -x '*x86.apk' -x '*armeabi_v7a.apk' -d "${base_template}/stock/" >/dev/null 2>&1
+				elif [ "$arch" = "arm-v7a" ]; then
+					unzip -j "${stock_apk}.apkm" '*.apk' -x '*x86_64.apk' -x '*x86.apk' -x '*arm64_v8a.apk' -d "${base_template}/stock/" >/dev/null 2>&1
+				elif [ "$arch" = "x86" ]; then
+					unzip -j "${stock_apk}.apkm" '*.apk' -x '*x86_64.apk' -x '*arm64_v8a.apk' -x '*armeabi_v7a.apk' -d "${base_template}/stock/" >/dev/null 2>&1
+				elif [ "$arch" = "x86_64" ]; then
+					unzip -j "${stock_apk}.apkm" '*.apk' -x '*x86.apk' -x '*arm64_v8a.apk' -x '*armeabi_v7a.apk' -d "${base_template}/stock/" >/dev/null 2>&1
+				else
+					unzip -j "${stock_apk}.apkm" '*.apk' -x '*x86_64.apk' -x '*x86.apk' -d "${base_template}/stock/" >/dev/null 2>&1
+				fi
+			fi
+		fi
+
 		pushd >/dev/null "$base_template" || abort "Module template dir not found"
 		zip -"$COMPRESSION_LEVEL" -FSqr "${CWD}/${BUILD_DIR}/${module_output}" .
 		popd >/dev/null || :
